@@ -264,10 +264,10 @@ Estoque* retirar_produtos(Estoque *ptr)
     printf("Quantos produtos voce gostaria de remover?\n");
     scanf("%d",&quantos);
     for(int i = 0; i<quantos; i++){
+    while(1){
     printf("Digite o codigo do produto:\n");
     scanf("%d", &codigo);
     Estoque *no = busca_recursiva_especifica(ptr ,codigo);
-    while(1){
     if (no == NULL) {
         printf("Produto nao encontrado.\n");
         continue;
@@ -355,3 +355,4 @@ void retirar_produtos(Estoque *ptr)
     
     return 0;
 }*/
+

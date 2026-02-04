@@ -26,10 +26,10 @@ Produto* criar_struct(Estoque *primeiro)
 
     else{
         printf("Digite o codigo unico:\n--> ");
-        scanf("%d", &ptr -> codigo); //limpar buffer??
+        scanf("%d", &ptr -> codigo);
             Produto *k = busca_pelo_codigo(ptr->codigo, primeiro);
 
-            if (k != NULL){ //se o codigo ja estiver armazenado no estoque, este caso vai acrescentar mais produtos
+            if (k != NULL){ 
                 printf("Produto ja existente no sitema.\nQuantos deseja acrescentar?\n--> ");
                 scanf("%d", &i);
                 k-> quantidade += i;
@@ -66,20 +66,11 @@ Estoque* busca_recursiva_especifica(Estoque *ptr, int i){
 
     if (ptr->produto && ptr->produto->codigo == i) return ptr;
 
-    return busca_recursiva_especifica(ptr,i);
+    return busca_recursiva_especifica(ptr->prox,i);
     
 }
 
 
-/*Estoque* busca_recursiva_anterior_especifica(int j, int i, int k, Estoque *ptr, Estoque *ptr1){ //int i sempre ser zero ao chamar
-    if (ptr->produto->codigo == j){
-        if (k == 0) return ptr1;
-        else return ptr;
-    }
-    i ++;
-    if (i>1) return busca_recursiva_anterior_especifica(j,i,k, ptr->prox,ptr1->prox);
-    else return busca_recursiva_anterior_especifica(j,i,k, ptr->prox, ptr1);
-}*/
 
 
 
@@ -95,12 +86,14 @@ Estoque* criar_estoque()
         ptr-> produto = NULL;
         ptr-> prev = NULL;
         ptr-> prox = NULL;
-        return ptr; //linkar esta funcao com o cadastrar_produto
+        return ptr; 
     }
 }
 
-void cadastrar_produto(Estoque *ptr){                 //o *head deve ser no inicio o ptr -> prox = NULL do criar_estoque e *novo 
+void cadastrar_produto(Estoque *ptr){     
+
     int quantidade;
+
     printf("Quantos produtos serao cadastrados?\n--> ");
     scanf("%d", &quantidade);
     for (int i = 0; i < quantidade; i++){             //deve ser o ptr -> produto = NULL
@@ -125,6 +118,21 @@ void cadastrar_produto(Estoque *ptr){                 //o *head deve ser no inic
         novo->prev = maisum;                  //associar a nova struct de estoque(com o produto) com o final do estoque
     }                              
 }
+}
+
+Estoque* checar_lista_de_estoque(Estoque *ptr){
+
+    if(!ptr){criar_estoque();
+        printf("Estoque vazio\n");
+        return NULL;}
+
+    if (ptr-> produto == NULL)
+    {printf("Estoque vazio\n");
+        return NULL;
+    }
+    else{
+        return ptr;
+    }
 }
 
 void exibir_lista_de_estoque(Estoque *ptr){
@@ -175,6 +183,7 @@ void editar_dados_do_produto(Estoque *ptr)
         printf("Gostaria de mudar %s para %s?\nS/N", ptr->nome, novo_nome);
         scanf(" %c", c);
         if(c == 'S') novo->nome = novo_nome;
+        printf("\n");
         */
         scanf("%50[^\n]", n->nome);
         printf("\n");
@@ -208,16 +217,7 @@ void editar_dados_do_produto(Estoque *ptr)
 }
 
 
-/*Estoque* remocao(Estoque *ptr, Estoque *novo){
-    if(novo->prev && novo->prox) {novo->prev->prox = novo->prox;
-        novo->prox->prev = novo->prev;
-        ptr = novo->prev;}
-    if(novo->prox) ptr = novo->prox;
-    else {free(novo);
-        return NULL;}
-    free(novo);
-    return ptr;}
-*/
+
 Estoque* remocao(Estoque *ptr, Estoque *novo){ //novo eh a struct que sera apagada da lista
     Estoque *head = ptr; //armazenando o valor da cabeca
     while(1)
@@ -232,7 +232,8 @@ Estoque* remocao(Estoque *ptr, Estoque *novo){ //novo eh a struct que sera apaga
             else{ 
                 
                 if(novo->prox != NULL){ //se esta no comeco a cabeca eh o proximo -final
-                    head = ptr->prox;}
+                    head = ptr->prox;
+                    head->prev = NULL;}
 
                 else{
 
@@ -264,15 +265,18 @@ Estoque* retirar_produtos(Estoque *ptr)
     printf("Quantos produtos voce gostaria de remover?\n");
     scanf("%d",&quantos);
     for(int i = 0; i<quantos; i++){
+        ptr = head;
+    if(!checar_lista_de_estoque(ptr)) return head;
+    while(1){
     printf("Digite o codigo do produto:\n");
     scanf("%d", &codigo);
-    Estoque *no = busca_recursiva_especifica(ptr ,codigo);
-    while(1){
-    if (no == NULL) {
+    getchar();
+    if (busca_recursiva_especifica(ptr,codigo) == NULL) {
         printf("Produto nao encontrado.\n");
-        continue;
+        continue;}
+    break;
     }
-    break;}
+    Estoque *no = busca_recursiva_especifica(ptr ,codigo);
     printf("Produto: %s\n", no->produto->nome);
     printf("Quantidade: %d\n", no->produto->quantidade);
     printf("Preco: R$%.2f\n", no->produto->preco);
@@ -332,7 +336,7 @@ void menuProdutos(Estoque *estoque) {
                 editar_dados_do_produto(estoque);
                 break;
             case 5:
-                retirar_produtos(estoque);
+                estoque = retirar_produtos(estoque);
                 break;
             case 0:
                 printf("Voltando ao menu principal...\n");
